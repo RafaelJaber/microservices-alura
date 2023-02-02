@@ -1,12 +1,13 @@
 using RestauranteService.Models;
 
-namespace RestauranteService.Data;
-
-public interface IRestauranteRepository
+namespace RestauranteService.Data
 {
-    void SaveChanges();
+    public interface IRestauranteRepository
+    {
+        void SaveChanges();
 
-    IEnumerable<Restaurante> GetAllRestaurantes();
-    Restaurante GetRestauranteById(int id);
-    void CreateRestaurante(Restaurante restaurante);
+        IEnumerable<Restaurante> GetAllRestaurantes();
+        Restaurante GetRestauranteById(int id);
+        void CreateRestaurante(Restaurante restaurante);
+    }
 }

@@ -5,58 +5,59 @@ using RestauranteService.Dtos;
 using RestauranteService.ItemServiceHttpClient;
 using RestauranteService.Models;
 
-namespace RestauranteService.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-public class RestauranteController : ControllerBase
+namespace RestauranteService.Controllers
 {
-    private readonly IRestauranteRepository _repository;
-    private readonly IMapper _mapper;
-    private IItemServiceHttpClient _itemServiceHttpClient;
-
-    public RestauranteController(
-        IRestauranteRepository repository,
-        IMapper mapper, IItemServiceHttpClient itemServiceHttpClient)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RestauranteController : ControllerBase
     {
-        _repository = repository;
-        _mapper = mapper;
-        _itemServiceHttpClient = itemServiceHttpClient;
-    }
+        private readonly IRestauranteRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly IItemServiceHttpClient _itemServiceHttpClient;
 
-    [HttpGet]
-    public ActionResult<IEnumerable<RestauranteReadDto>> GetAllRestaurantes()
-    {
-
-        var restaurantes = _repository.GetAllRestaurantes();
-
-        return Ok(_mapper.Map<IEnumerable<RestauranteReadDto>>(restaurantes));
-    }
-
-    [HttpGet("{id}", Name = "GetRestauranteById")]
-    public ActionResult<RestauranteReadDto> GetRestauranteById(int id)
-    {
-        var restaurante = _repository.GetRestauranteById(id);
-        if (restaurante != null)
+        public RestauranteController(
+            IRestauranteRepository repository,
+            IMapper mapper, IItemServiceHttpClient itemServiceHttpClient)
         {
-            return Ok(_mapper.Map<RestauranteReadDto>(restaurante));
+            _repository = repository;
+            _mapper = mapper;
+            _itemServiceHttpClient = itemServiceHttpClient;
         }
 
-        return NotFound();
-    }
+        [HttpGet]
+        public ActionResult<IEnumerable<RestauranteReadDto>> GetAllRestaurantes()
+        {
 
-    [HttpPost]
-    public async Task<ActionResult<RestauranteReadDto>> CreateRestaurante(RestauranteCreateDto restauranteCreateDto)
-    {
-        var restaurante = _mapper.Map<Restaurante>(restauranteCreateDto);
-        _repository.CreateRestaurante(restaurante);
-        _repository.SaveChanges();
+            var restaurantes = _repository.GetAllRestaurantes();
 
-        var restauranteReadDto = _mapper.Map<RestauranteReadDto>(restaurante);
+            return Ok(_mapper.Map<IEnumerable<RestauranteReadDto>>(restaurantes));
+        }
 
-        _itemServiceHttpClient.EnviaRestauranteParaItemService(restauranteReadDto);
+        [HttpGet("{id}", Name = "GetRestauranteById")]
+        public ActionResult<RestauranteReadDto> GetRestauranteById(int id)
+        {
+            Restaurante? restaurante = _repository.GetRestauranteById(id);
+            if (restaurante != null)
+            {
+                return Ok(_mapper.Map<RestauranteReadDto>(restaurante));
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<RestauranteReadDto>> CreateRestaurante(RestauranteCreateDto restauranteCreateDto)
+        {
+            Restaurante? restaurante = _mapper.Map<Restaurante>(restauranteCreateDto);
+            _repository.CreateRestaurante(restaurante);
+            _repository.SaveChanges();
+
+            RestauranteReadDto? restauranteReadDto = _mapper.Map<RestauranteReadDto>(restaurante);
+
+            _itemServiceHttpClient.EnviaRestauranteParaItemService(restauranteReadDto);
 
 
-        return CreatedAtRoute(nameof(GetRestauranteById), new { restauranteReadDto.Id }, restauranteReadDto);
+            return CreatedAtRoute(nameof(GetRestauranteById), new { restauranteReadDto.Id }, restauranteReadDto);
+        }
     }
 }

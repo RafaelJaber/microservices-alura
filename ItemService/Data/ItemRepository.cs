@@ -35,8 +35,11 @@ namespace ItemService.Data
             return _context.Restaurantes.ToList();
         }
 
-        public Item GetItem(int restauranteId, int itemId) => _context.Itens
-            .Where(item => item.IdRestaurante == restauranteId && item.Id == itemId).FirstOrDefault();
+        public Item GetItem(int restauranteId, int itemId)
+        {
+            return _context.Itens
+                .Where(item => item.IdRestaurante == restauranteId && item.Id == itemId).FirstOrDefault();
+        }
 
         public IEnumerable<Item> GetItensDeRestaurante(int restauranteId)
         {

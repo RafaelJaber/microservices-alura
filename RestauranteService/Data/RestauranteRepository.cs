@@ -29,7 +29,10 @@ namespace RestauranteService.Data
             return _context.Restaurantes.ToList();
         }
 
-        public Restaurante GetRestauranteById(int id) => _context.Restaurantes.FirstOrDefault(c => c.Id == id);
+        public Restaurante GetRestauranteById(int id)
+        {
+            return _context.Restaurantes.FirstOrDefault(c => c.Id == id);
+        }
 
         public void SaveChanges()
         {
